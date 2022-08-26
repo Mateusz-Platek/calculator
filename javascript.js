@@ -34,6 +34,8 @@ const digits = document.querySelectorAll('.digit');
 const clear = document.querySelector('.clear');
 const operators = document.querySelectorAll('.operator');
 const equals = document.querySelector('.equals');
+const del = document.querySelector('.delete');
+const dot = document.querySelector('.dot');
 
 let screenValue = null;
 let choosenOperator = 'start';
@@ -55,12 +57,39 @@ digits.forEach(button => {
     })
 });
 
+dot.addEventListener('click', () => {
+    let state = 'notpresent'
+    let text = calcScreen.textContent;
+    let arrText = text.split('');
+    for(let i = 0; i < arrText.length; i++) {
+        if(arrText[i] == '.') {
+            state = 'present'
+        }
+    }
+    if(state == 'notpresent') {
+        calcScreen.textContent = calcScreen.textContent + dot.textContent;
+    }
+});
+
 clear.addEventListener('click', () => {
     calcScreen.textContent = '0';
     choosenOperator = 'start';
     firstNumber = null;
     secondNumber = null;
     next = 'no';
+});
+
+del.addEventListener('click', () => {
+    let text = calcScreen.textContent;
+    let arrText = text.split('');
+    if(arrText.length == 1) {
+        calcScreen.textContent = '0';
+    } else {
+        arrText.pop();
+        text = arrText.join('');
+        calcScreen.textContent = text;
+        screenValue = Number(calcScreen.textContent);
+    }
 });
 
 operators.forEach(button => {
@@ -102,5 +131,6 @@ equals.addEventListener('click', () => {
     secondNumber = screenValue;
     result = operate(choosenOperator, firstNumber, secondNumber);
     screenValue = result;
+    firstNumber = result;
     calcScreen.textContent = result;
 });
