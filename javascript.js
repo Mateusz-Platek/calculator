@@ -42,14 +42,15 @@ let choosenOperator = 'start';
 let firstNumber = null;
 let secondNumber = null;
 let result = null;
-let next = 'no';
+let resetScreen = false;
+let afterEquals = false;
 
 digits.forEach(button => {
     button.addEventListener('click', () => {
-        if(calcScreen.textContent == '0' || calcScreen.textContent == '+' || calcScreen.textContent == '-' || calcScreen.textContent == '*' || calcScreen.textContent == '/' || calcScreen.textContent == "Don't divide by 0" || next == 'yes') {
+        if(calcScreen.textContent == '0' || calcScreen.textContent == '+' || calcScreen.textContent == '-' || calcScreen.textContent == '*' || calcScreen.textContent == '/' || calcScreen.textContent == "Don't divide by 0" || resetScreen == true) {
             calcScreen.textContent = button.textContent;
             screenValue = Number(calcScreen.textContent);
-            next = 'no';
+            resetScreen = false;
         } else {
             calcScreen.textContent = calcScreen.textContent + button.textContent;
             screenValue = Number(calcScreen.textContent);
@@ -58,15 +59,15 @@ digits.forEach(button => {
 });
 
 dot.addEventListener('click', () => {
-    let state = 'notpresent'
+    let dotPresent = false;
     let text = calcScreen.textContent;
     let arrText = text.split('');
     for(let i = 0; i < arrText.length; i++) {
         if(arrText[i] == '.') {
-            state = 'present'
+            dotPresent = true;
         }
     }
-    if(state == 'notpresent') {
+    if(state == false) {
         calcScreen.textContent = calcScreen.textContent + dot.textContent;
     }
 });
@@ -76,7 +77,8 @@ clear.addEventListener('click', () => {
     choosenOperator = 'start';
     firstNumber = null;
     secondNumber = null;
-    next = 'no';
+    resetScreen = false;
+    afterEquals = false;
 });
 
 del.addEventListener('click', () => {
@@ -94,8 +96,14 @@ del.addEventListener('click', () => {
 
 operators.forEach(button => {
     button.addEventListener('click', () => {
+        if(afterEquals == true) {
+            choosenOperator = 'start';
+            afterEquals = false;
+            screenValue = firstNumber;
+        }
+
         if(choosenOperator != 'start') {
-            next = 'yes';
+            resetScreen = true;
             secondNumber = screenValue;
             result = operate(choosenOperator, firstNumber, secondNumber);
             screenValue = result;
@@ -111,7 +119,7 @@ operators.forEach(button => {
                 choosenOperator = '/';
             }
         } else {
-            next = 'yes';
+            resetScreen = true;
             firstNumber = screenValue;
             if(button.textContent == '+') {
                 choosenOperator = '+';
@@ -123,14 +131,14 @@ operators.forEach(button => {
                 choosenOperator = '/';
             }
         }
-        console.log(firstNumber, secondNumber);
     });
 });
 
 equals.addEventListener('click', () => {
+    resetScreen = true;
     secondNumber = screenValue;
     result = operate(choosenOperator, firstNumber, secondNumber);
-    screenValue = result;
-    firstNumber = result;
     calcScreen.textContent = result;
+    firstNumber = result;
+    afterEquals = true;
 });
